@@ -1,0 +1,61 @@
+﻿@page "/personas/nueva"
+@page "/personas/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+<PageTitle>Personas</PageTitle>
+<h3>@_mensaje Persona</h3>
+
+<EditForm Model="_persona" FormName="frmPersona" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtNombre" @bind-Value="_persona.Nombre" />
+            <ValidationMessage For="()=>_persona.Nombre" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="txtCorreo" class="col-sm-2 col-form-label">Correo</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtCorreo" @bind-Value="_persona.Correo" />
+            <ValidationMessage For="()=>_persona.Correo" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="txtTelefono" class="col-sm-2 col-form-label">Teléfono</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtTelefono" @bind-Value="_persona.Telefono" />
+            <ValidationMessage For="()=>_persona.Telefono" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private Persona _persona = new();
+    private string _mensaje = "Nueva ";
+
+    protected override void OnInitialized()
+    {
+        if (id > 0)
+        {
+            _mensaje = "Modificar ";
+            // Simular la carga de datos de una persona existente
+            _persona = new Persona { Id = id, Nombre = "Persona " + id, Correo = id + "@ucol", Telefono = "123456789" };
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/personas");
+    }
+
+    private void Guardar()
+    {
+        Cancelar();
+    }
+}
