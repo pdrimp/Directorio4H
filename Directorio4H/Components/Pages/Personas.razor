@@ -1,12 +1,21 @@
 ﻿@page "/personas"
 @inject NavigationManager _navigationManager
+@inject IRepositorioPersonas _repositorioPersonas
 @rendermode InteractiveServer
 <PageTitle>Personas</PageTitle>
 
 <h1>Personas</h1>
 <a class="btn btn-primary" href="personas/nueva">Nueva Persona</a>
 
-@if (_personas.Count() > 0)
+@if (_personas == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (_personas.Count() == 0)
+{
+    <h3>No hay personas registradas.</h3>
+}
+else
 {
     <table class="table table-striped">
         <thead>
@@ -42,17 +51,24 @@
 }
 
 @code {
-    private List<Persona> _personas = new();
+    private List<Persona>? _personas;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _personas.Add(new() { Id = 1, Nombre = "Persona 1", Correo = "uno@ucol", Telefono = "111111111" });
-        _personas.Add(new() { Id = 2, Nombre = "Persona 2", Correo = "dos@ucol", Telefono = "222222222" });
-        _personas.Add(new() { Id = 3, Nombre = "Persona 3", Correo = "tres@ucol", Telefono = "333333333" });
+        _personas = await _repositorioPersonas.GetAll();
     }
 
-    private void Eliminar(Persona persona)
+
+    // protected override void OnInitialized()
+    // {
+    //     _personas.Add(new() { Id = 1, Nombre = "Persona 1", Correo = "uno@ucol", Telefono = "111111111" });
+    //     _personas.Add(new() { Id = 2, Nombre = "Persona 2", Correo = "dos@ucol", Telefono = "222222222" });
+    //     _personas.Add(new() { Id = 3, Nombre = "Persona 3", Correo = "tres@ucol", Telefono = "333333333" });
+    // }
+
+    private async Task Eliminar(Persona persona)
     {
+        await _repositorioPersonas.Delete(persona.Id);
         _personas.Remove(persona);
     }
 

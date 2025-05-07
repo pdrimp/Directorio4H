@@ -1,6 +1,7 @@
 ﻿@page "/personas/nueva"
 @page "/personas/editar/{id:int}"
 @inject NavigationManager _navigationManager
+@inject IRepositorioPersonas _repositorioPersonas
 @rendermode InteractiveServer
 <PageTitle>Personas</PageTitle>
 <h3>@_mensaje Persona</h3>
@@ -29,7 +30,7 @@
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Guardar</button>
-    <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
 </EditForm>
 
 
@@ -39,23 +40,41 @@
     private Persona _persona = new();
     private string _mensaje = "Nueva ";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (id > 0)
         {
             _mensaje = "Modificar ";
-            // Simular la carga de datos de una persona existente
-            _persona = new Persona { Id = id, Nombre = "Persona " + id, Correo = id + "@ucol", Telefono = "123456789" };
+            _persona = await _repositorioPersonas.Get(id);
         }
     }
+
+    // protected override void OnInitialized()
+    // {
+    //     if (id > 0)
+    //     {
+    //         _mensaje = "Modificar ";
+    //         // Simular la carga de datos de una persona existente
+    //         _persona = new Persona { Id = id, Nombre = "Persona " + id, Correo = id + "@ucol", Telefono = "123456789" };
+    //     }
+    // }
 
     private void Cancelar()
     {
         _navigationManager.NavigateTo("/personas");
     }
 
-    private void Guardar()
+    private async Task Guardar()
     {
+        if (id > 0)
+        {
+            _persona.Id = id;
+            await _repositorioPersonas.Update(_persona);
+        }
+        else
+        {
+            await _repositorioPersonas.Add(_persona);
+        }
         Cancelar();
     }
 }
