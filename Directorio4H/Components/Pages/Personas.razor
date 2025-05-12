@@ -69,7 +69,7 @@ else
     private async Task Eliminar(Persona persona)
     {
         await _repositorioPersonas.Delete(persona.Id);
-        _personas.Remove(persona);
+        _personas = await _repositorioPersonas.GetAll();
     }
 
     private void Editar(Persona persona)

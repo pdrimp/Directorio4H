@@ -30,7 +30,7 @@ namespace Directorio4H.Repostorio
 
         public async Task<List<Persona>> GetAll()
         {
-            return await _context.Personas.ToListAsync();
+            return await _context.Personas.AsNoTracking().ToListAsync();
         }
 
         public async Task Update(Persona persona)

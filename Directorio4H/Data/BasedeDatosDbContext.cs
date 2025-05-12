@@ -13,6 +13,5 @@ namespace Directorio4H.Data
         }
 
         public DbSet<Persona> Personas { get; set; }
-
     }
 }

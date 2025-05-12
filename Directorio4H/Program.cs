@@ -1,6 +1,7 @@
 using Directorio4H.Components;
 using Directorio4H.Data;
 using Directorio4H.Repostorio;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

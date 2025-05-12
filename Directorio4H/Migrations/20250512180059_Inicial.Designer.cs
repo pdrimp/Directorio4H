@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Directorio4H.Migrations
 {
     [DbContext(typeof(BasedeDatosDbContext))]
-    [Migration("20250507171929_Inicial")]
+    [Migration("20250512180059_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
