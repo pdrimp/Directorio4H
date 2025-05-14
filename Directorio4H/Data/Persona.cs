@@ -16,5 +16,9 @@ namespace Directorio4H.Data
         [Phone(ErrorMessage = "El teléfono no es válido")]
         [Length(10, 10, ErrorMessage = "El teléfono de contener 10 dígitos")]
         public string? Telefono { get; set; }
+
+        [Range(1,int.MaxValue, ErrorMessage = "La clasificación es obligatoria")]
+        public int ClasificacionId { get; set; }
+        virtual public Clasificacion? Clasificacion { get; set; }
     }
 }

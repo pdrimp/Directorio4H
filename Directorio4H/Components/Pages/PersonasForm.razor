@@ -2,6 +2,7 @@
 @page "/personas/editar/{id:int}"
 @inject NavigationManager _navigationManager
 @inject IRepositorioPersonas _repositorioPersonas
+@inject IRepositorioClasificaciones _repositorioClasificaciones
 @rendermode InteractiveServer
 <PageTitle>Personas</PageTitle>
 <h3>@_mensaje Persona</h3>
@@ -29,6 +30,19 @@
             <ValidationMessage For="()=>_persona.Telefono" />
         </div>
     </div>
+    <div class="mb-3 row">
+        <label for="txtClasificacion" class="col-sm-2 col-form-label">Clasificación</label>
+        <div class="col-sm-10">
+            <InputSelect class="form-select" id="txtClasificacion" @bind-Value="_persona.ClasificacionId">
+                <option value="">Seleccione...</option>
+                @foreach (var clasificacion in _clasificaciones)
+                {
+                    <option value="@clasificacion.Id">@clasificacion.Nombre</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>_persona.ClasificacionId" />
+        </div>
+    </div>
     <button type="submit" class="btn btn-primary">Guardar</button>
     <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
 </EditForm>
@@ -39,25 +53,17 @@
     public int id { get; set; }
     private Persona _persona = new();
     private string _mensaje = "Nueva ";
+    private List<Clasificacion> _clasificaciones = new();
 
     protected override async Task OnInitializedAsync()
     {
+        _clasificaciones = await _repositorioClasificaciones.GetAll();
         if (id > 0)
         {
             _mensaje = "Modificar ";
             _persona = await _repositorioPersonas.Get(id);
         }
     }
-
-    // protected override void OnInitialized()
-    // {
-    //     if (id > 0)
-    //     {
-    //         _mensaje = "Modificar ";
-    //         // Simular la carga de datos de una persona existente
-    //         _persona = new Persona { Id = id, Nombre = "Persona " + id, Correo = id + "@ucol", Telefono = "123456789" };
-    //     }
-    // }
 
     private void Cancelar()
     {

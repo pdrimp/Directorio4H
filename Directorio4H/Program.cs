@@ -17,6 +17,7 @@ builder.Services.AddDbContext<BasedeDatosDbContext>(
                                               "DefaultConnection")));
 
 builder.Services.AddScoped<IRepositorioPersonas, RepositorioPersonas>();
+builder.Services.AddScoped<IRepositorioClasificaciones, RepositorioClasificaciones>();
 
 var app = builder.Build();
 
