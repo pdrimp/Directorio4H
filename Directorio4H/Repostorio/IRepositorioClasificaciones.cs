@@ -9,5 +9,6 @@ namespace Directorio4H.Repostorio
         Task Add(Clasificacion clasificacion);
         Task Update(Clasificacion clasificacion);
         Task Delete(int id);
+        Task<bool> SePuedeBorrar(int id);
     }
 }

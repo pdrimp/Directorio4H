@@ -1,0 +1,56 @@
+﻿@page "/habitos/nueva"
+@page "/habitos/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioHabitos _repositorioHabitos
+@rendermode InteractiveServer
+<PageTitle>Hábitos</PageTitle>
+<h3>@_mensaje Hábito</h3>
+
+<EditForm Model="_habito" FormName="frmHabito" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtNombre" @bind-Value="_habito.Nombre" />
+            <ValidationMessage For="()=>_habito.Nombre" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private Habito _habito = new();
+    private string _mensaje = "Nuevo ";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id > 0)
+        {
+            _mensaje = "Modificar ";
+            _habito= await _repositorioHabitos.Get(id);
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/habitos");
+    }
+
+    private async Task Guardar()
+    {
+        if (id > 0)
+        {
+            _habito.Id = id;
+            await _repositorioHabitos.Update(_habito);
+        }
+        else
+        {
+            await _repositorioHabitos.Add(_habito);
+        }
+        Cancelar();
+    }
+}

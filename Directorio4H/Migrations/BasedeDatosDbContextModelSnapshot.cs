@@ -39,6 +39,23 @@ namespace Directorio4H.Migrations
                     b.ToTable("Clasificaciones");
                 });
 
+            modelBuilder.Entity("Directorio4H.Data.Habito", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Habitos");
+                });
+
             modelBuilder.Entity("Directorio4H.Data.Persona", b =>
                 {
                     b.Property<int>("Id")
@@ -71,6 +88,21 @@ namespace Directorio4H.Migrations
                     b.ToTable("Personas");
                 });
 
+            modelBuilder.Entity("HabitoPersona", b =>
+                {
+                    b.Property<int>("HabitosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonasId")
+                        .HasColumnType("int");
+
+                    b.HasKey("HabitosId", "PersonasId");
+
+                    b.HasIndex("PersonasId");
+
+                    b.ToTable("HabitoPersona");
+                });
+
             modelBuilder.Entity("Directorio4H.Data.Persona", b =>
                 {
                     b.HasOne("Directorio4H.Data.Clasificacion", "Clasificacion")
@@ -80,6 +112,21 @@ namespace Directorio4H.Migrations
                         .IsRequired();
 
                     b.Navigation("Clasificacion");
+                });
+
+            modelBuilder.Entity("HabitoPersona", b =>
+                {
+                    b.HasOne("Directorio4H.Data.Habito", null)
+                        .WithMany()
+                        .HasForeignKey("HabitosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Directorio4H.Data.Persona", null)
+                        .WithMany()
+                        .HasForeignKey("PersonasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Directorio4H.Data.Clasificacion", b =>

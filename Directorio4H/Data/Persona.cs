@@ -20,5 +20,7 @@ namespace Directorio4H.Data
         [Range(1,int.MaxValue, ErrorMessage = "La clasificación es obligatoria")]
         public int ClasificacionId { get; set; }
         virtual public Clasificacion? Clasificacion { get; set; }
+
+        public ICollection<Habito>? Habitos { get; set; }
     }
 }

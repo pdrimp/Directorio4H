@@ -33,6 +33,12 @@ namespace Directorio4H.Repostorio
             return await _context.Clasificaciones.AsNoTracking().ToListAsync();
         }
 
+        public async Task<bool> SePuedeBorrar(int id)
+        {
+            var clasificacion = await _context.Clasificaciones.Include(_ => _.Personas).SingleAsync(r => r.Id == id);
+            return (clasificacion.Personas!.Count() == 0);
+        }
+
         public async Task Update(Clasificacion clasificacion)
         {
             _context.Entry(clasificacion).State = EntityState.Modified;
