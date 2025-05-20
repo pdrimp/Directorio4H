@@ -3,6 +3,7 @@
 @inject NavigationManager _navigationManager
 @inject IRepositorioPersonas _repositorioPersonas
 @inject IRepositorioClasificaciones _repositorioClasificaciones
+@inject IRepositorioHabitos _repositorioHabitos
 @rendermode InteractiveServer
 <PageTitle>Personas</PageTitle>
 <h3>@_mensaje Persona</h3>
@@ -13,21 +14,21 @@
         <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
         <div class="col-sm-10">
             <InputText class="form-control" id="txtNombre" @bind-Value="_persona.Nombre" />
-            <ValidationMessage For="()=>_persona.Nombre" />
+            <ValidationMessage For="() => _persona.Nombre" />
         </div>
     </div>
     <div class="mb-3 row">
         <label for="txtCorreo" class="col-sm-2 col-form-label">Correo</label>
         <div class="col-sm-10">
             <InputText class="form-control" id="txtCorreo" @bind-Value="_persona.Correo" />
-            <ValidationMessage For="()=>_persona.Correo" />
+            <ValidationMessage For="() => _persona.Correo" />
         </div>
     </div>
     <div class="mb-3 row">
         <label for="txtTelefono" class="col-sm-2 col-form-label">Teléfono</label>
         <div class="col-sm-10">
             <InputText class="form-control" id="txtTelefono" @bind-Value="_persona.Telefono" />
-            <ValidationMessage For="()=>_persona.Telefono" />
+            <ValidationMessage For="() => _persona.Telefono" />
         </div>
     </div>
     <div class="mb-3 row">
@@ -40,11 +41,28 @@
                     <option value="@clasificacion.Id">@clasificacion.Nombre</option>
                 }
             </InputSelect>
-            <ValidationMessage For="()=>_persona.ClasificacionId" />
+            <ValidationMessage For="() => _persona.ClasificacionId" />
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+    <div class="mb-3 row">
+        <label for="txtHabitos" class="col-sm-2 col-form-label">Hábitos</label>
+        <div class="col-sm-10">
+            <select multiple class="form-select" id="txtHabitos" @onchange="OnSelectionChanged">
+                @foreach (var habito in _habitos)
+                {
+                    <option value="@habito.Id" selected="@_habitosIdSeleccionados.Contains(habito.Id)">
+                        @habito.Nombre
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+        </div>
+    </div>
 </EditForm>
 
 
@@ -54,14 +72,21 @@
     private Persona _persona = new();
     private string _mensaje = "Nueva ";
     private List<Clasificacion> _clasificaciones = new();
+    private List<Habito> _habitos = new();
+    private List<int> _habitosIdSeleccionados = new();
 
     protected override async Task OnInitializedAsync()
     {
         _clasificaciones = await _repositorioClasificaciones.GetAll();
+        _habitos = await _repositorioHabitos.GetAll();
         if (id > 0)
         {
             _mensaje = "Modificar ";
             _persona = await _repositorioPersonas.Get(id);
+            if (_persona.Habitos != null && _persona.Habitos.Count > 0)
+            {
+                _habitosIdSeleccionados = _persona.Habitos.Select(h => h.Id).ToList();
+            }
         }
     }
 
@@ -72,6 +97,16 @@
 
     private async Task Guardar()
     {
+        if (_habitosIdSeleccionados.Count > 0)
+        {
+            _persona.Habitos = new List<Habito>();
+            foreach (var id in _habitosIdSeleccionados)
+            {
+                var habito = await _repositorioHabitos.Get(id);
+                _persona.Habitos.Add(habito);
+            }
+        }
+
         if (id > 0)
         {
             _persona.Id = id;
@@ -82,5 +117,14 @@
             await _repositorioPersonas.Add(_persona);
         }
         Cancelar();
+    }
+
+    private void OnSelectionChanged(ChangeEventArgs e)
+    {
+        var selectedOptions = (e.Value as IEnumerable<string>) ?? new[] { e.Value?.ToString() };
+        _habitosIdSeleccionados = selectedOptions
+            .Where(id => int.TryParse(id, out _))
+            .Select(int.Parse)
+            .ToList();
     }
 }
