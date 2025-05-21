@@ -44,7 +44,7 @@
             <ValidationMessage For="() => _persona.ClasificacionId" />
         </div>
     </div>
-    <div class="mb-3 row">
+    @* <div class="mb-3 row">
         <label for="txtHabitos" class="col-sm-2 col-form-label">Hábitos</label>
         <div class="col-sm-10">
             <select multiple class="form-select" id="txtHabitos" @onchange="OnSelectionChanged">
@@ -56,7 +56,29 @@
                 }
             </select>
         </div>
+    </div> *@
+
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">Hábitos</label>
+        <div class="col-sm-10">
+            @foreach (var habito in _habitos)
+            {
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="habito_@habito.Id"
+                           value="@habito.Id"
+                           checked="@_habitosIdSeleccionados.Contains(habito.Id)"
+                           @onchange="(e) => OnCheckboxChanged(e, habito.Id)" />
+                    <label class="form-check-label" for="habito_@habito.Id">
+                        @habito.Nombre
+                    </label>
+                </div>
+            }
+        </div>
     </div>
+
+
     <div class="mb-3 row">
         <div class="col-sm-10 offset-sm-2">
             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -97,9 +119,9 @@
 
     private async Task Guardar()
     {
+        _persona.Habitos = new List<Habito>();
         if (_habitosIdSeleccionados.Count > 0)
         {
-            _persona.Habitos = new List<Habito>();
             foreach (var id in _habitosIdSeleccionados)
             {
                 var habito = await _repositorioHabitos.Get(id);
@@ -126,5 +148,20 @@
             .Where(id => int.TryParse(id, out _))
             .Select(int.Parse)
             .ToList();
+    }
+
+    private void OnCheckboxChanged(ChangeEventArgs e, int id)
+    {
+        if (e.Value is bool isChecked)
+        {
+            if (isChecked)
+            {
+                _habitosIdSeleccionados.Add(id);
+            }
+            else
+            {
+                _habitosIdSeleccionados.Remove(id);
+            }
+        }
     }
 }
